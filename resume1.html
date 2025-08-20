@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lalit Sharma – Resume</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#11162a;
+      --muted:#9fb0c7;
+      --text:#e8eef7;
+      --accent:#5bd3c7;
+      --chip:#1a2138;
+      --link:#7dd3fc;
+      --print-text:#111;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#0b1020 0%,#0b1020 60%,#0e1327 100%);color:var(--text)}
+    a{color:var(--link);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .wrap{max-width:1000px;margin:32px auto;padding:20px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.01));backdrop-filter:saturate(130%) blur(8px);border:1px solid rgba(255,255,255,.06);border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+
+    header{padding:28px 28px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .id{display:flex;gap:16px;align-items:center}
+    .avatar{width:68px;height:68px;border-radius:16px;background:linear-gradient(135deg,#1f2937,#0ea5e9);display:grid;place-items:center;color:white;font-weight:800;font-size:22px;letter-spacing:.5px}
+    .name h1{margin:0;font-size:28px;letter-spacing:.3px}
+    .name p{margin:4px 0 0;color:var(--muted)}
+
+    .cta{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);padding:10px 14px;border-radius:12px;color:var(--text);font-weight:600;cursor:pointer}
+    .btn:hover{background:rgba(255,255,255,.12)}
+
+    .contact{padding:0 28px 24px;color:var(--muted);display:flex;flex-wrap:wrap;gap:14px}
+    .contact a{color:var(--text)}
+
+    main{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;padding:0 20px 24px}
+    section{padding:18px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.03)}
+    h2{margin:0 0 12px;font-size:16px;letter-spacing:.6px;text-transform:uppercase;color:var(--accent)}
+
+    .item{margin:0 0 14px}
+    .item:last-child{margin-bottom:0}
+    .topline{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .org{font-weight:700}
+    .when{color:var(--muted)}
+    .role{margin:6px 0 8px;color:var(--muted)}
+    ul{margin:0 0 0 18px;padding:0}
+    li{margin:6px 0}
+
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:var(--chip)}
+
+    footer{padding:10px 28px 24px;color:var(--muted);text-align:center}
+
+    @media (max-width: 800px){
+      main{grid-template-columns:1fr}
+      .name h1{font-size:24px}
+      header{align-items:flex-start}
+    }
+
+    /* Print friendly */
+    @media print{
+      body{background:white}
+      .card{box-shadow:none;border:none;background:white}
+      header,.contact,section,footer{border:none;background:white}
+      .btn{display:none}
+      a{color:inherit;text-decoration:none}
+      body, .name h1, .role, .item, .chips, li{color:var(--print-text)}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <header>
+        <div class="id">
+          <div class="avatar" aria-hidden="true">LS</div>
+          <div class="name">
+            <h1>Lalit Sharma</h1>
+            <p>Computer Science Undergraduate • GLA University, Mathura</p>
+          </div>
+        </div>
+        <div class="cta">
+          <button class="btn" onclick="window.print()">Download / Print PDF</button>
+        </div>
+      </header>
+
+      <div class="contact">
+        <div>📞 <a href="tel:+918171327194">+91&nbsp;81713&nbsp;27194</a></div>
+        <div>✉️ <a href="mailto:lalit.sharma_cs23@gla.ac.in">lalit.sharma_cs23@gla.ac.in</a></div>
+        <!-- Add portfolio/github when ready -->
+      </div>
+
+      <main>
+        <!-- LEFT COLUMN -->
+        <section>
+          <h2>Education</h2>
+          <div class="item">
+            <div class="topline">
+              <div class="org">GLA University, Mathura</div>
+              <div class="when">Jul 2025 – Present</div>
+            </div>
+            <div class="role">B.Tech – Computer Science • CGPA: 7.4/10</div>
+          </div>
+          <div class="item">
+            <div class="topline">
+              <div class="org">Shri Lahari Singh Memorial (SLSMIC)</div>
+              <div class="when">May 2022</div>
+            </div>
+            <div class="role">Class XII • State Board • 64.6%</div>
+          </div>
+          <div class="item">
+            <div class="topline">
+              <div class="org">Shri Lahari Singh Memorial (SLSMIC)</div>
+              <div class="when">May 2020</div>
+            </div>
+            <div class="role">Class X • State Board • 87.3%</div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Projects</h2>
+          <div class="item">
+            <div class="topline">
+              <div class="org">MediCart – React-based Medical E‑commerce</div>
+            </div>
+            <ul>
+              <li>Responsive storefront for healthcare products (surgical, dental, veterinary, manicure, spa).</li>
+              <li>Cart & checkout with quantity controls and real‑time total updates; custom checkout modal.</li>
+              <li>Razorpay integration with QR code payments; optional Firebase auth.</li>
+              <li>Order tracker UI; reusable components (Navbar, Hero, ProductCard, CategorySection, CheckoutModal).</li>
+            </ul>
+            <div class="chips">
+              <span class="chip">React</span><span class="chip">JavaScript</span><span class="chip">CSS</span><span class="chip">React Router</span><span class="chip">Razorpay</span><span class="chip">Firebase</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="topline">
+              <div class="org">PREMIUM Watches – Landing Page</div>
+            </div>
+            <ul>
+              <li>Pure HTML/CSS landing experience with 3D‑like moving image effect.</li>
+              <li>Continuous image scrolling animation for product showcase.</li>
+              <li>Emphasis on clean, user‑friendly layout.</li>
+            </ul>
+            <div class="chips">
+              <span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">Animation</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT COLUMN -->
+        <section>
+          <h2>Technical Skills</h2>
+          <div class="chips" style="margin-bottom:10px">
+            <span class="chip">Java (DSA)</span>
+            <span class="chip">Python</span>
+            <span class="chip">C</span>
+            <span class="chip">C++</span>
+            <span class="chip">HTML/CSS</span>
+            <span class="chip">JavaScript</span>
+            <span class="chip">SQL</span>
+          </div>
+          <div class="chips">
+            <span class="chip">Git & GitHub</span>
+            <span class="chip">VS Code</span>
+            <span class="chip">React</span>
+          </div>
+        </section>
+
+        <section>
+          <h2>Professional Skills</h2>
+          <div class="chips">
+            <span class="chip">Communication</span>
+            <span class="chip">Teamwork</span>
+            <span class="chip">Interpersonal Skills</span>
+          </div>
+        </section>
+
+        <section>
+          <h2>Achievements</h2>
+          <div class="item">
+            2025 – NPTEL (IIT Kharagpur): Introduction to Environmental Engineering and Science.
+          </div>
+        </section>
+
+        <section>
+          <h2>Positions of Responsibility</h2>
+          <div class="item"><strong>Member, Udaan Asmaa Tak (NGO)</strong> – Volunteered on education & empowerment initiatives at GLA University.</div>
+        </section>
+
+        <section>
+          <h2>Extra‑Curricular</h2>
+          <div class="item">Personality development workshop participant, Literio Club, GLA University.</div>
+        </section>
+      </main>
+
+      <footer>
+        Tip: press the “Download / Print PDF” button above to export your resume as a PDF.
+      </footer>
+    </div>
+  </div>
+</body>
+</html>
