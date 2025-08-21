@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JS Main Thread Blockers – Demo Lab</title>
+  <style>
+    :root { --bg:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#94a3b8; --accent:#22d3ee; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: radial-gradient(1200px 800px at 10% 10%, #0b1223, var(--bg)); color: var(--text); }
+    header { padding: 28px 20px 8px; text-align: center; }
+    h1 { margin: 0; font-size: clamp(22px, 2.8vw, 34px); letter-spacing: 0.3px; }
+    p.sub { margin: 6px 0 0; color: var(--muted); }
+    main { max-width: 1100px; margin: 18px auto 60px; padding: 0 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .card { background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 16px; box-shadow: 0 6px 24px rgba(0,0,0,0.25); }
+    .card h2 { margin: 0 0 8px; font-size: 18px; }
+    .card p { margin: 6px 0 12px; color: var(--muted); font-size: 14px; }
+    .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    button { cursor: pointer; border: 1px solid rgba(255,255,255,0.12); background: #0b1020; color: var(--text); padding: 10px 12px; border-radius: 12px; font-weight: 600; transition: transform .04s ease, background .2s ease; }
+    button:hover { background: #121936; }
+    button:active { transform: translateY(1px); }
+    button.danger { background: #3b0b0b; border-color: #7a1e1e; }
+    .muted { color: var(--muted); font-size: 12px; }
+    .log { grid-column: 1/-1; min-height: 180px; background: #0b1020; border: 1px dashed rgba(255,255,255,0.12); border-radius: 14px; padding: 12px; overflow: auto; white-space: pre-wrap; }
+    .row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; }
+    .spinner { width: 28px; height: 28px; border: 3px solid rgba(255,255,255,0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-left: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 6px; }
+    .pill { display:inline-block; font-size:12px; padding:4px 8px; border-radius:999px; background:rgba(34,211,238,.12); color:var(--accent); border:1px solid rgba(34,211,238,.3); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>JS Main Thread Blockers – Demo Lab <span class="pill">Use carefully</span></h1>
+    <p class="sub">Click a button to purposely freeze the UI (main thread). Close the tab if you choose an infinite block.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Busy Loop (CPU spin)</h2>
+      <p>Burn CPU in a tight <code>while</code> loop for a chosen duration. This completely blocks rendering, input, and timers.</p>
+      <div class="btns">
+        <button onclick="blockFor(100)">Spin 100ms</button>
+        <button onclick="blockFor(1000)">Spin 1s</button>
+        <button onclick="blockFor(5000)">Spin 5s</button>
+        <button class="danger" onclick="blockFor(30000)">Spin 30s ⚠️</button>
+      </div>
+      <p class="muted">Implementation: <code>while (performance.now() - start &lt; ms) {}</code></p>
+    </section>
+
+    <section class="card">
+      <h2>Heavy Computation (Prime Count)</h2>
+      <p>Trial-divides to count primes up to <code>N</code>. Inefficient by design to hog the thread.</p>
+      <div class="row">
+        <div class="btns">
+          <button onclick="countPrimes(25000)">N = 25k</button>
+          <button onclick="countPrimes(75000)">N = 75k</button>
+          <button class="danger" onclick="countPrimes(200000)">N = 200k ⚠️</button>
+        </div>
+        <div class="spinner" title="If this stops spinning, the thread is blocked"></div>
+      </div>
+      <p class="muted">Purposely naive: O(N√N).</p>
+    </section>
+
+    <section class="card">
+      <h2>Huge JSON stringify/parse</h2>
+      <p>Create a giant object and thrash <code>JSON.stringify</code> and <code>JSON.parse</code> multiple times.</p>
+      <div class="btns">
+        <button onclick="thrashJSON(10_000_000, 2)">10 MB ×2</button>
+        <button onclick="thrashJSON(25_000_000, 2)">25 MB ×2</button>
+        <button class="danger" onclick="thrashJSON(50_000_000, 3)">50 MB ×3 ⚠️</button>
+      </div>
+      <p class="muted">Creates <code>{ blob: 'x'.repeat(size) }</code> and serializes/parses repeatedly.</p>
+    </section>
+
+    <section class="card">
+      <h2>Synchronous XHR (deprecated)</h2>
+      <p>Performs a synchronous XHR to a data URL (blocks event loop until response). Some browsers may warn or restrict this, but it still demonstrates blocking on many setups.</p>
+      <div class="btns">
+        <button onclick="syncXHR(2_000)">Sync XHR ~2s</button>
+        <button onclick="syncXHR(5_000)">Sync XHR ~5s</button>
+      </div>
+      <p class="muted">Uses <code>xhr.open('GET', dataUrl, false)</code> &amp; a busy spin to simulate latency.</p>
+    </section>
+
+    <section class="card">
+      <h2>Infinite Loop</h2>
+      <p><strong>Locks the page until the tab/process is killed.</strong> Only use if you truly want to freeze everything.</p>
+      <div class="btns">
+        <button class="danger" onclick="confirmInfinite()">Start Infinite Loop ⚠️</button>
+      </div>
+      <p class="muted">Implementation: <code>while (true) { /* spin */ }</code></p>
+    </section>
+
+    <section class="card">
+      <h2>Contrast: Web Worker (non-blocking)</h2>
+      <p>Run the same heavy prime count in a Worker so the UI remains responsive.</p>
+      <div class="btns">
+        <button onclick="workerPrimes(150000)">Worker N = 150k</button>
+        <button onclick="workerPrimes(400000)">Worker N = 400k</button>
+      </div>
+      <p class="muted">Good for verifying that only the main thread blocks.</p>
+    </section>
+
+    <section class="card log" id="log" aria-live="polite"></section>
+  </main>
+
+  <script>
+    const logEl = document.getElementById('log');
+    const log = (...args) => {
+      const time = new Date().toLocaleTimeString();
+      logEl.textContent += `[${time}] ` + args.join(' ') + "\n";
+      logEl.scrollTop = logEl.scrollHeight;
+    };
+
+    function blockFor(ms) {
+      const start = performance.now();
+      log(`Busy spin start for ${ms} ms`);
+      while (performance.now() - start < ms) {}
+      log(`Busy spin end (actual ${(performance.now()-start).toFixed(0)} ms)`);
+    }
+
+    function isPrime(n) {
+      if (n < 2) return false;
+      if (n % 2 === 0) return n === 2;
+      const lim = Math.floor(Math.sqrt(n));
+      for (let i = 3; i <= lim; i += 2) {
+        if (n % i === 0) return false;
+      }
+      return true;
+    }
+
+    function countPrimes(N) {
+      const t0 = performance.now();
+      let count = 0;
+      for (let i = 2; i <= N; i++) if (isPrime(i)) count++;
+      const t1 = performance.now();
+      log(`Counted ${count.toLocaleString()} primes up to ${N.toLocaleString()} in ${(t1 - t0).toFixed(0)} ms (main thread BLOCKED).`);
+    }
+
+    function thrashJSON(size, reps) {
+      const payload = { blob: 'x'.repeat(size) };
+      log(`JSON thrash start: size=${(size/1_000_000).toFixed(1)}MB, reps=${reps}`);
+      const t0 = performance.now();
+      let s = '';
+      for (let i = 0; i < reps; i++) {
+        s = JSON.stringify(payload);
+        JSON.parse(s);
+      }
+      const t1 = performance.now();
+      log(`JSON thrash done in ${(t1 - t0).toFixed(0)} ms; final string length=${s.length.toLocaleString()}.`);
+    }
+
+    function busyWait(ms) { const start = performance.now(); while (performance.now() - start < ms) {} }
+
+    function syncXHR(fakeLatencyMs) {
+      // Build a small data URL. We'll busy-wait to simulate latency before sending.
+      const data = 'Blocking sync XHR test.';
+      const url = 'data:text/plain;base64,' + btoa(data);
+      log(`Sync XHR start (~${fakeLatencyMs} ms)`);
+      busyWait(fakeLatencyMs); // simulate network
+      const xhr = new XMLHttpRequest();
+      try {
+        xhr.open('GET', url, false); // false = synchronous (deprecated, blocks)
+        xhr.send(null);
+        log(`Sync XHR done. status=${xhr.status}, bytes=${xhr.responseText.length}`);
+      } catch (e) {
+        log('Sync XHR failed (browser may block):', e.message || e);
+      }
+    }
+
+    function confirmInfinite() {
+      const ok = confirm('This will freeze the tab indefinitely. You will need to close the tab or kill the process. Continue?');
+      if (!ok) return;
+      log('Starting infinite loop… say goodbye to the UI.');
+      // eslint-disable-next-line no-constant-condition
+      while (true) {}
+    }
+
+    // Web Worker for contrast
+    let worker;
+    function ensureWorker() {
+      if (worker) return worker;
+      const blob = new Blob([
+`self.onmessage = (e) => {
+  const N = e.data; 
+  const isPrime = (n) => { if (n < 2) return false; if (n % 2 === 0) return n === 2; const lim = Math.floor(Math.sqrt(n)); for (let i=3;i<=lim;i+=2){ if(n%i===0) return false; } return true; };
+  const t0 = performance.now();
+  let count = 0; for (let i=2;i<=N;i++) if (isPrime(i)) count++;
+  const t1 = performance.now();
+  postMessage({ N, count, ms: (t1-t0) });
+};`
+      ], { type: 'application/javascript' });
+      worker = new Worker(URL.createObjectURL(blob));
+      worker.onmessage = (e) => {
+        const { N, count, ms } = e.data;
+        log(`Worker finished: ${count.toLocaleString()} primes up to ${N.toLocaleString()} in ${ms.toFixed(0)} ms (UI stayed responsive).`);
+      };
+      return worker;
+    }
+
+    function workerPrimes(N) {
+      ensureWorker().postMessage(N);
+      log(`Worker started prime count to ${N.toLocaleString()}…`);
+    }
+
+    // Ticker so you can see if UI freezes
+    (function heartbeat(){
+      let i = 0;
+      setInterval(() => { i=(i+1)%4; const dots = '.'.repeat(i); document.title = `JS Blockers ${dots}`; }, 400);
+    })();
+
+    log('Ready. Try a blocking action and watch the spinner/title freeze.');
+  </script>
+</body>
+</html>
